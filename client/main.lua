@@ -244,9 +244,13 @@ function OpenBossMenu(groupType)
         id = 'openBossMenu',
         title = groupType == 'gang' and string.upper(QBX.PlayerData.gang.label) or string.upper(QBX.PlayerData.job.label),
         options = bossMenu,
-        onExit = not config.useTarget and function()
-            lib.showTextUI(groupType == 'gang' and locale('menu.gang_management') or locale('menu.boss_management'))
-        end or nil,
+        onExit = function()
+            if not config.useTarget then
+                lib.showTextUI(groupType == 'gang' and locale('menu.gang_management') or locale('menu.boss_management'))
+            else
+                lib.hideContext()
+            end
+        end,
     })
 
     lib.showContext('openBossMenu')
@@ -264,7 +268,7 @@ local function createZone(zoneInfo)
             options = {
                 {
                     name = zoneInfo.groupName .. '_menu',
-                    icon = 'right-to-bracket',
+                    icon = 'fa-solid fa-right-to-bracket',
                     label = zoneInfo.type == 'gang' and locale('menu.gang_menu') or locale('menu.boss_menu'),
                     canInteract = function()
                         return zoneInfo.groupName == QBX.PlayerData[zoneInfo.type].name and QBX.PlayerData[zoneInfo.type].isboss
