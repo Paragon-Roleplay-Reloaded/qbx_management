@@ -1,11 +1,18 @@
 lib.versionCheck('Qbox-project/qbx_management')
-if not lib.checkDependency('qbx_core', '1.18.0', true) then error() return end
-if not lib.checkDependency('ox_lib', '3.13.0', true) then error() return end
+if not lib.checkDependency('qbx_core', '1.24.0', true) then
+    error()
+    return
+end
+if not lib.checkDependency('ox_lib', '3.39.0', true) then
+    error()
+    return
+end
 
 local config = require 'config.server'
 local logger = require '@qbx_core.modules.logger'
 local storage = require 'server.storage'
-local managementEnabled = (GetConvar('qbx:enableGroupManagement', 'false') == 'true')
+-- local managementEnabled = (GetConvar('qbx:enableGroupManagement', 'false') == 'true')
+local managementEnabled = true
 local JOBS = exports.qbx_core:GetJobs()
 local GANGS = exports.qbx_core:GetGangs()
 local playersClockedIn = {}
@@ -73,7 +80,7 @@ local function getMenuEntries(groupName, groupType)
         menuEntries[#menuEntries + 1] = {
             cid = citizenid,
             grade = grade,
-            name = namePrefix..player.PlayerData.charinfo.firstname..' '..player.PlayerData.charinfo.lastname,
+            name = namePrefix .. player.PlayerData.charinfo.firstname .. ' ' .. player.PlayerData.charinfo.lastname,
             onduty = player.PlayerData.job.onduty and not player.Offline,
             hours = playerActivityData?.hours,
             last_checkin = playerLastCheckIn
@@ -150,7 +157,7 @@ lib.callback.register('qbx_management:server:updateGrade', function(source, citi
 
     if employee then
         local gradeName = groupDefinition.grades[newGrade].name
-        exports.qbx_core:Notify(employee.PlayerData.source, locale('success.promoted_to')..gradeName..'.', 'success')
+        exports.qbx_core:Notify(employee.PlayerData.source, locale('success.promoted_to') .. gradeName .. '.', 'success')
     end
     exports.qbx_core:Notify(source, locale('success.promoted'), 'success')
 
@@ -184,8 +191,8 @@ lib.callback.register('qbx_management:server:hireEmployee', function(source, emp
 
     local groupName = group.name
     local logArea = groupType == 'gang' and 'Gang' or 'Boss'
-    local playerFullName = player.PlayerData.charinfo.firstname..' '..player.PlayerData.charinfo.lastname
-    local targetFullName = target.PlayerData.charinfo.firstname..' '..target.PlayerData.charinfo.lastname
+    local playerFullName = player.PlayerData.charinfo.firstname .. ' ' .. player.PlayerData.charinfo.lastname
+    local targetFullName = target.PlayerData.charinfo.firstname .. ' ' .. target.PlayerData.charinfo.lastname
     local organizationLabel = group.label
     local targetAgreed = lib.callback.await('qbx_management:client:confirmHire', employee, playerFullName, organizationLabel)
 
@@ -197,9 +204,9 @@ lib.callback.register('qbx_management:server:hireEmployee', function(source, emp
     player = exports.qbx_core:GetPlayer(source)
     target = exports.qbx_core:GetPlayer(employee)
     local currentGroup = getPlayerGroup(player, groupType)
-    if not currentGroup or not currentGroup.isboss or currentGroup.name ~= groupName or not target
-        or GetPlayerRoutingBucket(source) ~= GetPlayerRoutingBucket(employee)
-        or #(GetEntityCoords(GetPlayerPed(source)) - GetEntityCoords(GetPlayerPed(employee))) > 10.0 then return end
+    if not currentGroup or not currentGroup.isboss or currentGroup.name ~= groupName or not target or GetPlayerRoutingBucket(source) ~= GetPlayerRoutingBucket(employee) or #(GetEntityCoords(GetPlayerPed(source)) - GetEntityCoords(GetPlayerPed(employee))) > 10.0 then
+        return
+    end
 
     if groupType == 'job' then
         local success, errorResult = exports.qbx_core:AddPlayerToJob(target.PlayerData.citizenid, groupName, 0)
@@ -214,7 +221,7 @@ lib.callback.register('qbx_management:server:hireEmployee', function(source, emp
     end
 
     exports.qbx_core:Notify(source, locale('success.hired_into', targetFullName, organizationLabel), 'success')
-    exports.qbx_core:Notify(target.PlayerData.source, locale('success.hired_to')..organizationLabel, 'success')
+    exports.qbx_core:Notify(target.PlayerData.source, locale('success.hired_to') .. organizationLabel, 'success')
 
     logger.log({
         source = source,
@@ -239,7 +246,7 @@ lib.callback.register('qbx_management:server:getPlayers', function(source, close
         if player and GetPlayerRoutingBucket(source) == GetPlayerRoutingBucket(playerId) and #(requesterCoords - GetEntityCoords(GetPlayerPed(playerId))) <= 10.0 then
             players[#players + 1] = {
                 id = playerId,
-                name = player.PlayerData.charinfo.firstname..' '..player.PlayerData.charinfo.lastname,
+                name = player.PlayerData.charinfo.firstname .. ' ' .. player.PlayerData.charinfo.lastname,
                 citizenid = player.PlayerData.citizenid,
                 job = player.PlayerData.job,
                 gang = player.PlayerData.gang,
@@ -323,13 +330,16 @@ lib.callback.register('qbx_management:server:fireEmployee', function(source, emp
     if not group or not group.isboss or type(employee) ~= 'string' then return end
 
     local firedEmployee = exports.qbx_core:GetPlayerByCitizenId(employee) or exports.qbx_core:GetOfflinePlayer(employee)
-    local playerFullName = player.PlayerData.charinfo.firstname..' '..player.PlayerData.charinfo.lastname
+    local playerFullName = player.PlayerData.charinfo.firstname .. ' ' .. player.PlayerData.charinfo.lastname
     local organizationLabel = group.label
 
-    if not firedEmployee then lib.print.error("not able to find player with citizenid", employee) return end
+    if not firedEmployee then
+        lib.print.error("not able to find player with citizenid", employee)
+        return
+    end
 
     local success = fireEmployee(employee, player, group.name, groupType)
-    local employeeFullName = firedEmployee.PlayerData.charinfo.firstname..' '..firedEmployee.PlayerData.charinfo.lastname
+    local employeeFullName = firedEmployee.PlayerData.charinfo.firstname .. ' ' .. firedEmployee.PlayerData.charinfo.lastname
 
     if success then
         local logArea = groupType == 'gang' and 'Gang' or 'Boss'

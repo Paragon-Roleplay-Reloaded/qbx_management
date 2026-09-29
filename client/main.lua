@@ -45,7 +45,7 @@ local function manageEmployee(player, groupName, groupType)
     for groupGrade, gradeTitle in pairs(employeeLoop) do
         employeeMenu[#employeeMenu + 1] = {
             title = gradeTitle.name,
-            description = locale('menu.grade')..groupGrade,
+            description = locale('menu.grade') .. groupGrade,
             onSelect = function()
                 lib.callback.await('qbx_management:server:updateGrade', false, player.cid, player.grade, tonumber(groupGrade), groupType)
                 OpenBossMenu(groupType)
@@ -86,9 +86,9 @@ local function editGrade(groupType, groupData, grade)
         { type = 'input', label = locale('grade.label'), default = gradeData.name, required = true },
     }
     if groupType == 'job' then
-        rows[#rows+1] = { type = 'number', label = locale('grade.pay'), default = gradeData.payment }
-        rows[#rows+1] = { type = 'checkbox', label = locale('grade.boss'), checked = gradeData.isboss }
-        rows[#rows+1] = { type = 'checkbox', label = locale('grade.bank'), checked = gradeData.bankAuth }
+        rows[#rows + 1] = { type = 'number', label = locale('grade.pay'), default = gradeData.payment }
+        rows[#rows + 1] = { type = 'checkbox', label = locale('grade.boss'), checked = gradeData.isboss }
+        rows[#rows + 1] = { type = 'checkbox', label = locale('grade.bank'), checked = gradeData.bankAuth }
     end
     local data = lib.inputDialog(("%s: %s"):format(groupData.label, gradeData.name), rows)
 
@@ -123,8 +123,8 @@ local function employeeList(groupType)
         if employee.hours and employee.last_checkin then
             employeesData.metadata = {
                 { label = locale('menu.employee_status'), value = employee.onduty and locale('menu.on_duty') or locale('menu.off_duty') },
-                { label = locale('menu.hours_in_days'), value = employee.hours },
-                { label = locale('menu.last_checkin'), value = employee.last_checkin },
+                { label = locale('menu.hours_in_days'),   value = employee.hours },
+                { label = locale('menu.last_checkin'),    value = employee.last_checkin },
             }
         end
         employeesMenu[#employeesMenu + 1] = employeesData
@@ -150,7 +150,7 @@ local function showHireMenu(groupType)
         if player[groupType].name ~= hireName then
             hireMenu[#hireMenu + 1] = {
                 title = player.name,
-                description = locale('menu.citizen_id')..player.citizenid..' - '..locale('menu.id')..player.source,
+                description = locale('menu.citizen_id') .. player.citizenid .. ' - ' .. locale('menu.id') .. player.source,
                 onSelect = function()
                     lib.callback.await('qbx_management:server:hireEmployee', false, player.source, groupType)
                     OpenBossMenu(groupType)
@@ -178,7 +178,7 @@ local function showGradeMenu(groupType)
 
     for i = 0, #groupData.grades do
         local grade = groupData.grades[i]
-        gradeOpts[#gradeOpts+1] = {
+        gradeOpts[#gradeOpts + 1] = {
             title = grade.name,
             description = locale(("menu.manage_%s_grade"):format(groupType)),
             icon = 'pen-to-square',
@@ -224,7 +224,7 @@ function OpenBossMenu(groupType)
     }
 
     if GetConvar('qbx:enableGroupManagement', 'false') == 'true' then
-        bossMenu[#bossMenu+1] = {
+        bossMenu[#bossMenu + 1] = {
             title = locale(("menu.manage_%s_grades"):format(groupType)),
             description = locale(("menu.manage_%s_grades_desc"):format(groupType)),
             icon = 'clipboard-list',
@@ -263,7 +263,7 @@ local function createZone(zoneInfo)
             debug = config.debugPoly,
             options = {
                 {
-                    name = zoneInfo.groupName..'_menu',
+                    name = zoneInfo.groupName .. '_menu',
                     icon = 'right-to-bracket',
                     label = zoneInfo.type == 'gang' and locale('menu.gang_menu') or locale('menu.boss_menu'),
                     canInteract = function()
