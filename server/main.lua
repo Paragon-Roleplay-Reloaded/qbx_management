@@ -19,6 +19,7 @@ local playersClockedIn = {}
 local menus = {}
 local ready = false
 local validGroupTypes = { job = true, gang = true }
+local ox_inventory = exports.ox_inventory
 
 ---@param player Player?
 ---@param groupType any
@@ -26,6 +27,23 @@ local validGroupTypes = { job = true, gang = true }
 local function getPlayerGroup(player, groupType)
     if not player or type(groupType) ~= 'string' or not validGroupTypes[groupType] then return end
     return player.PlayerData[groupType]
+end
+
+-- Create stash for job or gang bosses
+if GetResourceState('ox_inventory') == 'started' and GetCurrentResourceName() then
+    local bossStash = {
+        id = 'boss_stash',
+        label = locale('info.inventory_label'),
+        slots = config.stashSlots,
+        weight = config.stashWeight,
+        owner = true
+    }
+
+    AddEventHandler('onServerResourceStart', function(resourceName)
+        if resourceName == 'ox_inventory' or resourceName == GetCurrentResourceName() then
+            ox_inventory:RegisterStash(bossStash.id, bossStash.label, bossStash.slots, bossStash.weight, bossStash.owner)
+        end
+    end)
 end
 
 ---Initialize storage, menus & managed groups

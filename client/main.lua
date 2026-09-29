@@ -3,6 +3,7 @@ local JOBS = exports.qbx_core:GetJobs()
 local GANGS = exports.qbx_core:GetGangs()
 local isLoggedIn = LocalPlayer.state.isLoggedIn
 local dynamicMenuItems = {}
+local ox_inventory = exports.ox_inventory
 
 -- Adds item to the boss/gang menu.
 ---@param menuItem ContextMenuItem Requires args.type to be set to know which menu to place in.
@@ -199,6 +200,13 @@ local function showGradeMenu(groupType)
     lib.showContext('gradeMenu')
 end
 
+-- Opens job or gang boss stash
+local function openStash()
+    if GetResourceState('ox_inventory') == 'started' and GetCurrentResourceName() then
+        ox_inventory:openInventory('stash', 'boss_stash')
+    end
+end
+
 -- Opens main boss menu changing function based on the group provided.
 ---@param groupType GroupType
 function OpenBossMenu(groupType)
@@ -219,6 +227,14 @@ function OpenBossMenu(groupType)
             icon = 'hand-holding',
             onSelect = function()
                 showHireMenu(groupType)
+            end,
+        },
+        {
+            title = groupType == 'gang' and locale('menu.gang_boss_stash') or locale('menu.boss_stash'),
+            description = groupType == 'gang' and locale('menu.open_gang_boss_stash') or locale('menu.open_boss_stash'),
+            icon = 'box-open',
+            onSelect = function()
+                openStash()
             end,
         },
     }
