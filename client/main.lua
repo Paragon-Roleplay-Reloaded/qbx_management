@@ -14,6 +14,7 @@ local function addMenuItem(menuItem)
     dynamicMenuItems[menuId] = lib.table.deepclone(menuItem)
     return menuId
 end
+
 exports('AddBossMenuItem', addMenuItem)
 exports('AddGangMenuItem', addMenuItem)
 
@@ -22,6 +23,7 @@ exports('AddGangMenuItem', addMenuItem)
 local function removeMenuItem(id)
     dynamicMenuItems[id] = nil
 end
+
 exports('RemoveBossMenuItem', removeMenuItem)
 exports('RemoveGangMenuItem', removeMenuItem)
 

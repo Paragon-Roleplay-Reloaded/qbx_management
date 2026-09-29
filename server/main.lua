@@ -29,7 +29,7 @@ local function getPlayerGroup(player, groupType)
     return player.PlayerData[groupType]
 end
 
--- Create stash for job or gang bosses
+-- Creates a stash for job or gang bosses
 if GetResourceState('ox_inventory') == 'started' and GetCurrentResourceName() then
     local bossStash = {
         id = 'boss_stash',
